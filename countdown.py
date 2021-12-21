@@ -31,7 +31,7 @@ def start_test_countdown(s, auction_id, bearer_token):
     s.headers.update({'authorization':bearer_token})
 
 
-
+    MAX_WORKERS = 8
 
     
     
@@ -40,7 +40,7 @@ def start_test_countdown(s, auction_id, bearer_token):
     
      
 
-    fs = FuturesSession(session = s, max_workers = 8)
+    fs = FuturesSession(session = s, max_workers = MAX_WORKERS)
     
     for url in time_url_list:
         future = fs.get(url)
@@ -52,14 +52,17 @@ def start_test_countdown(s, auction_id, bearer_token):
     timer = start_interval_timer(s, bid_url, json_response)
     # final_timer = start_final_timer(s, bid_url, json_response)
     current_winner = json_response['bids'][0]['user']['username']
-
+    j = 0
     for future in as_completed(future_list):
-        
-        response = future.result()
-        json_response = json.loads(response.content)
-        print(json_response)
-        if current_winner != json_response['bids'][0]['user']['username']:
-            timer.cancel()
-            current_winner = json_response['bids'][0]['user']['username']
-            timer = start_interval_timer(s, bid_url, json_response)
-            print(f'{t.now()} - {current_winner}')
+        if j != 0:
+            response = future.result()
+            json_response = json.loads(response.content)
+            print(json_response)
+            if current_winner != json_response['bids'][0]['user']['username']:
+                timer.cancel()
+                current_winner = json_response['bids'][0]['user']['username']
+                timer = start_interval_timer(s, bid_url, json_response)
+                j = MAX_WORKERS*2
+                print(f'{t.now()} - {current_winner}')
+        else:
+            j = j - 1
