@@ -7,3 +7,7 @@ def place_bid(s, bid_url):
 
     print(resp.status_code)
     print(resp.content)
+
+def final_bids(s, bid_url):
+
+    print('test')

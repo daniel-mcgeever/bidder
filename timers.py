@@ -2,22 +2,47 @@ import threading as t
 import time
 import requests as req
 import json as j
-from bid import place_bid
+from bid import place_bid, final_bids
+from datetime import datetime, timezone, timedelta
 
 def start_final_timer(s, bid_url, response):
     json = j.loads(response.content)
-    extra_time_remaining = json['extra_time_remaining']
 
-    timer = t.Timer(extra_time_remaining-0.5, place_bid, [s, bid_url])
+    extra_time_remaining = time_until_auction_end(json)
+
+    timer = t.Timer(extra_time_remaining, final_bids, [s, bid_url])
+
+    timer.start()
+
+    return timer
+
+def start_interval_timer(s, bid_url, json):
+
+    time_remaining = time_until_bid_end(json)
+
+    timer = t.Timer(time_remaining, place_bid, [s, bid_url])
 
     timer.start()
 
     return timer
 
-def start_interval_timer(s, bid_url, time):
 
-    timer = t.Timer(time-0.35, place_bid, [s, bid_url])
 
-    timer.start()
+def time_until_bid_end(json):
+    created_at = json['bids'][0]['created_at']
 
-    return timer
+    timestamp = datetime.fromisoformat(created_at)
+
+    delay = timedelta(seconds=9,milliseconds=600)
+
+    bid_end_timestamp = timestamp + delay
+
+    duration = bid_end_timestamp - datetime.now(timezone.utc)
+
+    return duration.total_seconds()
+
+def time_until_auction_end(json):
+
+    duration = json['extra_time_remaining'] - 1
+
+    return duration
