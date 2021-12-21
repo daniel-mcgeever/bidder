@@ -5,8 +5,8 @@ import json as j
 from bid import place_bid, final_bids
 from datetime import datetime, timezone, timedelta
 
-def start_final_timer(s, bid_url, response):
-    json = j.loads(response.content)
+def start_final_timer(s, bid_url, json):
+    # json = j.loads(response.content)
 
     extra_time_remaining = time_until_auction_end(json)
 

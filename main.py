@@ -17,6 +17,6 @@ bid_page_soup = bs(bid_page_response.content, 'html.parser')
 auction_id = bid_page_soup.find_all(class_='auction-show')[0]['data-auction-id']
 bearer_token = f'Bearer {bid_page_soup.find_all(class_="center-align live-auction-detail__button-container")[0].button["data-jwt"]}'
 
-
+print(auction_id)
 
 start_test_countdown(s,auction_id,bearer_token)

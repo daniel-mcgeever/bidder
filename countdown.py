@@ -24,19 +24,20 @@ def start_countdown(s, auction_id, bearer_token):
 
 def start_test_countdown(s, auction_id, bearer_token):
 
-    url = 'https://www.dream-bid.com/auctions/{auction_id}.json?locale=en'
+    url = f'https://www.dream-bid.com/auctions/{auction_id}.json?locale=en'
     bid_url = f'https://9yxm7kac4b.execute-api.eu-west-1.amazonaws.com/api/bids/{auction_id}'  
+    print(url)
     time_url_list = [url]*100
+    s.headers.update({'authorization':bearer_token})
 
-    resp = s.get(url)
 
-    start_final_timer(s, bid_url, resp)
 
-    current_winner = 'test'#json.loads(resp)['bids'][0]['id']
+
+    
     
     future_list = []
 
-    s.headers.update({'authorization':bearer_token})
+    
      
 
     fs = FuturesSession(session = s, max_workers = 8)
@@ -45,21 +46,20 @@ def start_test_countdown(s, auction_id, bearer_token):
         future = fs.get(url)
         future_list.append(future)
 
+    # Implement a block here that starts the initial interval timer and pass reference into for loop
+    resp = s.get(url)
+    json_response = json.loads(resp)
+    timer = start_interval_timer(s, bid_url, json_response)
+    # final_timer = start_final_timer(s, bid_url, json_response)
+    current_winner = json_response['bids'][0]['user']['username']
+
     for future in as_completed(future_list):
         
         response = future.result()
         json_response = json.loads(response.content)
-        time_remaining = json_response['time_remaining']
-        print(f'{future.i} {time_remaining}')
-        if current_winner != json_response['bids'][0]['id']:
-            current_winner = json_response['bids'][0]['id']
-            start_interval_timer(s, bid_url, json_response)
-            print(current_winner)
-        # if time_remaining < 0.35:
-        #     place_bid(s,bid_url)
-            
-            # implement logic that check if order is correct. Then store value if less than previously stored value, else start a timer with current value
-        # if j % 100 == 0:
-        #     print(j)
-        #     print(time_remaining)
-        j=j+1
+        print(json_response)
+        if current_winner != json_response['bids'][0]['user']['username']:
+            timer.cancel()
+            current_winner = json_response['bids'][0]['user']['username']
+            timer = start_interval_timer(s, bid_url, json_response)
+            print(f'{t.now()} - {current_winner}')
