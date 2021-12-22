@@ -26,8 +26,7 @@ def start_test_countdown(s, auction_id, bearer_token):
 
     url = f'https://www.dream-bid.com/auctions/{auction_id}.json?locale=en'
     bid_url = f'https://9yxm7kac4b.execute-api.eu-west-1.amazonaws.com/api/bids/{auction_id}'  
-    print(url)
-    time_url_list = [url]*100
+    time_url_list = [url]*10000
     s.headers.update({'authorization':bearer_token})
 
 
@@ -48,21 +47,21 @@ def start_test_countdown(s, auction_id, bearer_token):
 
     # Implement a block here that starts the initial interval timer and pass reference into for loop
     resp = s.get(url)
-    json_response = json.loads(resp)
+    json_response = json.loads(resp.content)
     timer = start_interval_timer(s, bid_url, json_response)
     # final_timer = start_final_timer(s, bid_url, json_response)
     current_winner = json_response['bids'][0]['user']['username']
     j = 0
     for future in as_completed(future_list):
-        if j != 0:
-            response = future.result()
+        if j == 0:
+            response = future.result()  
             json_response = json.loads(response.content)
-            print(json_response)
+            
             if current_winner != json_response['bids'][0]['user']['username']:
                 timer.cancel()
                 current_winner = json_response['bids'][0]['user']['username']
                 timer = start_interval_timer(s, bid_url, json_response)
                 j = MAX_WORKERS*2
-                print(f'{t.now()} - {current_winner}')
+                print(f'{current_winner}')
         else:
             j = j - 1

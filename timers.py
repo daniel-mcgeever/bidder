@@ -16,9 +16,11 @@ def start_final_timer(s, bid_url, json):
 
     return timer
 
-def start_interval_timer(s, bid_url, json):
+def start_interval_timer(s, bid_url, created_at):
 
-    time_remaining = time_until_bid_end(json)
+    time_remaining = time_until_bid_end(created_at)
+
+    print(time_remaining)
 
     timer = t.Timer(time_remaining, place_bid, [s, bid_url])
 
@@ -28,14 +30,15 @@ def start_interval_timer(s, bid_url, json):
 
 
 
-def time_until_bid_end(json):
-    created_at = json['bids'][0]['created_at']
+def time_until_bid_end(created_at, time_now):
+    # created_at = json['bids'][0]['created_at']
 
     timestamp = datetime.fromisoformat(created_at)
 
     delay = timedelta(seconds=9,milliseconds=600)
 
     bid_end_timestamp = timestamp + delay
+    print(bid_end_timestamp)
 
     duration = bid_end_timestamp - datetime.now(timezone.utc)
 
