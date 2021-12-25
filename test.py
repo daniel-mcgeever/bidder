@@ -9,14 +9,15 @@ from countdown import start_countdown
 import json
 import time
 from datetime import datetime, timedelta, timezone
-from timers import time_until_auction_end, time_until_bid_end
+from timers import calculate_server_time_delta, time_until_auction_end, time_until_bid_end
 
 
 
 s = req.Session()
 
-resp = s.get('https://www.dream-bid.com/auctions/050c5b8b-ba8c-4dea-b92a-f7cfc8c5a0cb.json?locale=en')
+resp = s.get('https://www.dream-bid.com/auctions/nintendo-switch-oled-251221?locale=en')
 
-json = json.loads(resp.content)
+# json = json.loads(resp.content)
+# print(resp.content)
 
-print(time_until_auction_end(json))
+print(calculate_server_time_delta(s))

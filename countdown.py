@@ -5,6 +5,7 @@ import json
 from requests_futures.sessions import FuturesSession
 from concurrent.futures import as_completed
 from timers import start_final_timer, start_interval_timer
+from datetime import datetime
 
 def start_countdown(s, auction_id, bearer_token):
 
@@ -26,19 +27,13 @@ def start_test_countdown(s, auction_id, bearer_token):
 
     url = f'https://www.dream-bid.com/auctions/{auction_id}.json?locale=en'
     bid_url = f'https://9yxm7kac4b.execute-api.eu-west-1.amazonaws.com/api/bids/{auction_id}'  
-    time_url_list = [url]*10000
+    time_url_list = [url]*1000000
     s.headers.update({'authorization':bearer_token})
-
 
     MAX_WORKERS = 8
 
-    
-    
     future_list = []
-
-    
      
-
     fs = FuturesSession(session = s, max_workers = MAX_WORKERS)
     
     for url in time_url_list:
@@ -48,20 +43,40 @@ def start_test_countdown(s, auction_id, bearer_token):
     # Implement a block here that starts the initial interval timer and pass reference into for loop
     resp = s.get(url)
     json_response = json.loads(resp.content)
+    # timer = start_interval_timer(s, bid_url, json_response)
+    # created_at = json_response['bids'][0]['created_at']
+    # time_now = convert_date(resp.headers['Date'])
+
+    # final_timer = start_final_timer(s, bid_url, created_at, time_now)
     timer = start_interval_timer(s, bid_url, json_response)
-    # final_timer = start_final_timer(s, bid_url, json_response)
     current_winner = json_response['bids'][0]['user']['username']
-    j = 0
+    current_winning_bid_time = datetime.fromisoformat(json_response['bids'][0]['created_at'])
+
+    print(f'{datetime.now()}: The current winning bid is {current_winner} at {current_winning_bid_time}')
+    # timer.cancel()
+
     for future in as_completed(future_list):
-        if j == 0:
-            response = future.result()  
-            json_response = json.loads(response.content)
-            
-            if current_winner != json_response['bids'][0]['user']['username']:
-                timer.cancel()
-                current_winner = json_response['bids'][0]['user']['username']
-                timer = start_interval_timer(s, bid_url, json_response)
-                j = MAX_WORKERS*2
-                print(f'{current_winner}')
-        else:
-            j = j - 1
+
+        response = future.result()  
+        json_response = json.loads(response.content)
+        
+        if current_winning_bid_time < datetime.fromisoformat(json_response['bids'][0]['created_at']):
+
+            print(f'{datetime.now()}: Cancellling the timer')
+            timer.cancel()
+
+            current_winner = json_response['bids'][0]['user']['username']
+            current_winning_bid_time = datetime.fromisoformat(json_response['bids'][0]['created_at'])
+
+            # created_at = json_response['bids'][0]['created_at']
+            # time_now = response.headers
+
+            timer = start_interval_timer(s, bid_url, json_response)
+
+            print(f'{datetime.now()}: The current winning bid is {current_winner} at {current_winning_bid_time}')
+
+
+
+def convert_date(unparsed):
+    t = datetime.strptime(unparsed, '%a, %d %b %Y %H:%M:%S %Z')
+    return t
