@@ -6,6 +6,7 @@ from bid import place_bid, final_bids
 from datetime import datetime, timezone, timedelta
 import pytz
 
+
 def start_final_timer(s, bid_url, json):
     # json = j.loads(response.content)
 
@@ -35,6 +36,8 @@ def start_interval_timer(s, bid_url, json):
 
 
 
+
+
 def time_until_bid_end(json):
     created_at = json['bids'][0]['created_at']
 
@@ -55,25 +58,13 @@ def time_until_auction_end(json):
 
     return duration
 
-def calculate_server_time_delta(s):
-    
-    start_time = pytz.utc.localize(datetime.now())
-    response = s.get('https://www.dream-bid.com/auctions/dd48be1c-5641-412b-9124-fd86b41bec25.json?locale=en')
-    end_time = pytz.utc.localize(datetime.now())
-    elapsed_time = response.elapsed.total_seconds()
+def time_until_auction_start(json):
 
-    json_response = j.loads(response.content)
-    auction_end_time = datetime.fromisoformat(json_response['current_end_at'])
-    time_unitl_auction_end = json_response['time_remaining']
+    duration = json['time_remaining']
 
+    print(f'{datetime.now()}: Time until auction start: {duration}')
 
-    header_time = datetime.strptime(response.headers['Date'], '%a, %d %b %Y %H:%M:%S %Z')
+    return duration
 
-    time_difference = auction_end_time - end_time
-    print(header_time)
-    print(end_time)
-    print(time_unitl_auction_end%1)
-    print(header_time + timedelta(seconds=1 - time_unitl_auction_end%1) )
-   
 def test_func():
     print(f'{datetime.now()}: Function triggered')
