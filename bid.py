@@ -7,16 +7,19 @@ from concurrent.futures import as_completed
 
 def place_bid(s, bid_url):
 
+    start_time = datetime.now()
     resp = s.get(bid_url)
+    
+    print(f'{datetime.now()}: Request sent at {start_time}, a response was received at {datetime.now()} with status code {resp.status_code}')
+    if resp.status_code != 200:
+        print(f'{datetime.now()}: Error: {resp.content}')
 
-    print(f'{datetime.now()}: Response: {resp.status_code}')
-    print(f'{datetime.now()}: Response: {resp.content}')
 
 def final_bids(s, bid_url):
 
-    bid_url_list = [bid_url]*1000
+    bid_url_list = [bid_url]*200
 
-    MAX_WORKERS = 16
+    MAX_WORKERS = 20
 
     future_list = []
      

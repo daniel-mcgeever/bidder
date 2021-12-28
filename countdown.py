@@ -42,21 +42,18 @@ def start_test_countdown(s, auction_id, bearer_token):
         future = fs.get(url)
         future_list.append(future)
 
-    # Implement a block here that starts the initial interval timer and pass reference into for loop
     resp = s.get(url)
     json_response = json.loads(resp.content)
-    # timer = start_interval_timer(s, bid_url, json_response)
-    # created_at = json_response['bids'][0]['created_at']
-    # time_now = convert_date(resp.headers['Date'])
 
     final_timer = start_final_timer(s, bid_url, json_response)
-    timer = start_interval_timer(s, bid_url, json_response)
+    timer = (start_interval_timer(s, bid_url, json_response), 0)
     current_winner = json_response['bids'][0]['user']['username']
     current_winning_bid_time = datetime.fromisoformat(json_response['bids'][0]['created_at'])
 
+    print(f'{datetime.now()}: Timer number {timer[1]} started')
     print(f'{datetime.now()}: The current winning bid is {current_winner} at {current_winning_bid_time}')
-    # timer.cancel()
 
+    i = 1
     for future in as_completed(future_list):
 
         response = future.result()  
@@ -64,8 +61,8 @@ def start_test_countdown(s, auction_id, bearer_token):
         
         if current_winning_bid_time < datetime.fromisoformat(json_response['bids'][0]['created_at']):
 
-            print(f'{datetime.now()}: Cancellling the timer')
-            timer.cancel()
+            print(f'{datetime.now()}: Cancellling timer nnumber {timer[1]}')
+            timer[0].cancel()
 
             current_winner = json_response['bids'][0]['user']['username']
             current_winning_bid_time = datetime.fromisoformat(json_response['bids'][0]['created_at'])
@@ -73,9 +70,11 @@ def start_test_countdown(s, auction_id, bearer_token):
             # created_at = json_response['bids'][0]['created_at']
             # time_now = response.headers
 
-            timer = start_interval_timer(s, bid_url, json_response)
+            timer = (start_interval_timer(s, bid_url, json_response), i)
 
             print(f'{datetime.now()}: The current winning bid is {current_winner} at {current_winning_bid_time}')
+            print(f'{datetime.now()}: Timer number {timer[1]} started')
+
 
 
 
