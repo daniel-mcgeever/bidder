@@ -59,7 +59,7 @@ def time_until_auction_end(json):
 
     extra_time_end_time = auction_end_time + extra_time
 
-    buffer_time = timedelta(seconds=0.7)
+    buffer_time = timedelta(seconds=0.5)
 
     duration = extra_time_end_time - datetime.now(tz=pytz.utc) - buffer_time
 
