@@ -15,7 +15,7 @@ from timers import time_until_auction_end, time_until_bid_end
 
 s = req.Session()
 
-resp = s.get('https://www.dream-bid.com/auctions/d5d5e1f4-27c4-4ba0-aaa5-27fe9b09e3ab.json?locale=en')
+resp = s.get(' https://www.dream-bid.com/auctions/33767a4d-0ed5-419f-91b8-e1bffd89ca5a.json?locale=en')
 
 json = json.loads(resp.content)
 # print(resp.content)

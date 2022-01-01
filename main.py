@@ -11,7 +11,8 @@ import json
 import time
 from timers import time_until_auction_start
 
-auction_url = 'https://www.dream-bid.com/auctions/fendi-baguette-bag-281221?locale=en'
+auction_url = 'https://www.dream-bid.com/auctions/playstation-5-blu-ray-311221?locale=en'
+
 
 s = login('dmcg2448@gmail.com', 'T0wn3yg0rm')
 

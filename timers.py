@@ -16,15 +16,18 @@ def start_final_timer(s, bid_url, json):
 
     timer.start()
 
+    print(f'{datetime.now()}: Final timer started it will run for {extra_time_remaining} seconds')
+
     return timer
 
-def start_interval_timer(s, bid_url, json):
+def start_interval_timer(s, bid_url, json, i):
 
     time_remaining = time_until_bid_end(json)
 
-    timer = t.Timer(time_remaining, place_bid, [s, bid_url])
+    timer = t.Timer(time_remaining, place_bid, [s, bid_url, i])
 
     print(f'{datetime.now()}: Time until bid end: {time_remaining}')
+    print(f'{datetime.now()}: Timer number {i} started')
 
     timer.start()
 
@@ -39,7 +42,7 @@ def time_until_bid_end(json):
 
     timestamp = datetime.fromisoformat(created_at)
 
-    delay = timedelta(seconds=9,milliseconds=700)
+    delay = timedelta(seconds=9,milliseconds=750)
 
     bid_end_timestamp = timestamp + delay
 
@@ -50,15 +53,17 @@ def time_until_bid_end(json):
 
 def time_until_auction_end(json):
 
-    auction_end_time = datetime.fromisoformat(json['current_end_at'])
+    auction_end_time = datetime.fromisoformat('2022-01-01T14:00:00.000+00:00')
 
     extra_time = timedelta(minutes=json['max_extra_time_minutes'])
 
     extra_time_end_time = auction_end_time + extra_time
 
-    buffer_time = timedelta(seconds=0.3)
+    buffer_time = timedelta(seconds=0.7)
 
     duration = extra_time_end_time - datetime.now(tz=pytz.utc) - buffer_time
+
+    print(f'{datetime.now()}: The auction will end at {extra_time_end_time}')
 
     return duration.total_seconds()
 
