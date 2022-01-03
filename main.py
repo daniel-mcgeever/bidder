@@ -11,7 +11,15 @@ import json
 import time
 from timers import time_until_auction_start
 
-auction_url = 'https://www.dream-bid.com/auctions/playstation-5-blu-ray-311221?locale=en'
+def get_end_time_from_response(response_soup):
+
+    time = response_soup.find(class_='auction-detail__expiration-date').text
+
+    time_object = datetime.strptime(time.strip(), '%H:%M %d/%m/%Y')
+
+    return time_object
+
+auction_url = 'https://www.dream-bid.com/auctions/ysl-wallet-030122?locale=en'
 
 
 s = login('dmcg2448@gmail.com', 'T0wn3yg0rm')
@@ -30,10 +38,13 @@ json_response = json.loads(response.content)
 
 time_until_start = time_until_auction_start(json_response)
 
+auction_end_time = get_end_time_from_response(bid_page_soup)
 
-timer = threading.Timer(time_until_start, start_test_countdown, [s, auction_id, bearer_token])
+
+timer = threading.Timer(time_until_start, start_countdown, [s, auction_id, bearer_token, auction_end_time])
 timer.start()
 
 
 
 # start_test_countdown(s,auction_id,bearer_token)
+

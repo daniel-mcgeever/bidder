@@ -7,10 +7,10 @@ from datetime import datetime, timezone, timedelta
 import pytz
 
 
-def start_final_timer(s, bid_url, json):
+def start_final_timer(s, bid_url, json, auction_end_time):
     # json = j.loads(response.content)
 
-    extra_time_remaining = time_until_auction_end(json)
+    extra_time_remaining = time_until_auction_end(json, auction_end_time)
 
     timer = t.Timer(extra_time_remaining, final_bids, [s, bid_url])
 
@@ -42,7 +42,7 @@ def time_until_bid_end(json):
 
     timestamp = datetime.fromisoformat(created_at)
 
-    delay = timedelta(seconds=9,milliseconds=750)
+    delay = timedelta(seconds=9,milliseconds=770)
 
     bid_end_timestamp = timestamp + delay
 
@@ -51,9 +51,9 @@ def time_until_bid_end(json):
 
     return duration.total_seconds()
 
-def time_until_auction_end(json):
+def time_until_auction_end(json, auction_end_time):
 
-    auction_end_time = datetime.fromisoformat('2022-01-01T14:00:00.000+00:00')
+    # auction_end_time = datetime.fromisoformat('2022-01-03T12:00:00.000+00:00')
 
     extra_time = timedelta(minutes=json['max_extra_time_minutes'])
 
