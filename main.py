@@ -19,7 +19,7 @@ def get_end_time_from_response(response_soup):
 
     return time_object
 
-auction_url = 'https://www.dream-bid.com/auctions/ysl-wallet-030122?locale=en'
+auction_url = 'https://www.dream-bid.com/auctions/balenciaga-bag-140122?locale=en'
 
 
 s = login('dmcg2448@gmail.com', 'T0wn3yg0rm')

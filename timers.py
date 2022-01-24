@@ -42,7 +42,7 @@ def time_until_bid_end(json):
 
     timestamp = datetime.fromisoformat(created_at)
 
-    delay = timedelta(seconds=9,milliseconds=770)
+    delay = timedelta(seconds=9,milliseconds=800)
 
     bid_end_timestamp = timestamp + delay
 
@@ -59,9 +59,9 @@ def time_until_auction_end(json, auction_end_time):
 
     extra_time_end_time = auction_end_time + extra_time
 
-    buffer_time = timedelta(seconds=0.5)
+    buffer_time = timedelta(seconds=0.3)
 
-    duration = extra_time_end_time - datetime.now(tz=pytz.utc) - buffer_time
+    duration = extra_time_end_time - datetime.now() - buffer_time
 
     print(f'{datetime.now()}: The auction will end at {extra_time_end_time}')
 

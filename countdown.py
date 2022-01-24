@@ -1,4 +1,5 @@
 import requests as req
+from requests.models import ReadTimeoutError
 from bid import place_bid
 import time as t
 import json
@@ -23,8 +24,11 @@ def start_countdown(s, auction_id, bearer_token, auction_end_time):
     fs = FuturesSession(max_workers = MAX_WORKERS)
     
     for url in time_url_list:
-        future = fs.get(url, timeout=2)
-        future_list.append(future)
+        try:
+            future = fs.get(url, timeout=2)
+            future_list.append(future)
+        except ReadTimeoutError:
+            print(f'{datetime.now()}: Timeout error')
 
     resp = s.get(url)
     json_response = json.loads(resp.content)
